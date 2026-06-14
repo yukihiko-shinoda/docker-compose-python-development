@@ -1,0 +1,48 @@
+{
+	"folders": [
+		{
+			"path": "./__PROJECT__",
+			"name": "project"
+		},
+		{
+			"path": "."
+		}
+	],
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "uv sync",
+				"type": "shell",
+				"command": "uv sync",
+				"options": {
+					"cwd": "${workspaceFolder:project}"
+				},
+				"runOptions": {
+					"runOn": "folderOpen"
+				},
+				"presentation": {
+					"reveal": "silent"
+				}
+			}
+		]
+	},
+	"settings": {
+		"terminal.integrated.cwd": "${workspaceFolder:project}",
+
+		// Required so the Python extension resolves the correct interpreter for the workspace root (".").
+		// Without this, linter extensions that query ms-python.python for an interpreter (e.g. Bandit)
+		// receive no interpreter and fail to start their LSP server with "Unsupported server configuration".
+		"python.defaultInterpreterPath": "${workspaceFolder:project}/.venv/bin/python",
+
+		// Required so the Bandit extension uses the venv's bandit package instead of its outdated bundle.
+		// Without this the default is "useBundled", which may be incompatible with the project's Python version.
+		"bandit.importStrategy": "fromEnvironment",
+
+		// Required because the Bandit extension (pycqa.bandit-pycqa) uses the legacy ms-python.python API
+		// (getInterpreterDetails) to discover the Python executable. That API returns too slowly or returns
+		// nothing before Bandit gives up, causing "couldn't create connection to server".
+		// Setting this explicitly bypasses the API lookup entirely.
+		"bandit.interpreter": ["${workspaceFolder:project}/.venv/bin/python"]
+	}
+}

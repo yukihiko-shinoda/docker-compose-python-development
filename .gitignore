@@ -216,3 +216,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Claude Code local overrides
+CLAUDE.local.md
+
+# For this project
+venvs/*
+!venvs/.gitkeep
+
+# Generated per-project VS Code workspace files (generate with open-project.sh)
+*.code-workspace
+!workspace-template.code-workspace

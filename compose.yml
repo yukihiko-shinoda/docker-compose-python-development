@@ -1,0 +1,17 @@
+services:
+  python-development:
+    build: .
+    image: futureys/python-development:local
+    volumes:
+      - .:/workspace:cached
+      - venvs:/workspace/venvs
+      - ~/.claude:/root/.claude
+      - ~/.claude.json:/root/.claude.json
+      # - Using uv in Docker | uv
+      #   https://docs.astral.sh/uv/guides/integration/docker/#caching
+      - uv-cache:/root/.cache/uv
+      - uv-python:/root/.local/share/uv/python
+volumes:
+  uv-cache:
+  venvs:
+  uv-python:
