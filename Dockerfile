@@ -12,7 +12,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /etc/apt/keyrings \
  && chmod -R 0755 /etc/apt/keyrings \
  && out=$(mktemp) && wget -nv -O"$out" https://cli.github.com/packages/githubcli-archive-keyring.gpg \
- && cat "$out" | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+ && tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null < "$out" \
  && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
  && mkdir -p /etc/apt/sources.list.d \
  && chmod -R 0755 /etc/apt/sources.list.d \
@@ -21,6 +21,5 @@ RUN mkdir -p /etc/apt/keyrings \
     gh/stable \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint
+ENTRYPOINT ["entrypoint"]
