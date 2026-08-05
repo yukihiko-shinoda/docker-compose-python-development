@@ -1,7 +1,6 @@
 services:
   python-development:
-    build: .
-    image: futureys/python-development:local
+    image: futureys/claude-code-python-development:20260805201500
     volumes:
       - .:/workspace:cached
       - venvs:/workspace/venvs
