@@ -21,7 +21,26 @@ docker compose exec python-development bash
 
 ### venvs/ and Virtual Environment Persistence
 
-`entrypoint.sh` runs at container start and symlinks each project's `.venv` → `/workspace/venvs/<project>/`. The `venvs/` directory is a named Docker volume, so virtual environments survive container rebuilds. If `.venv` inside a project appears as a symlink rather than a real directory, this is expected behavior.
+Each project's `.venv` gets symlinked to `/workspace/venvs/<project>/` at container start, so virtual environments survive container rebuilds (`venvs/` is a named Docker volume). This symlinking script lives in the base image (`futureys/claude-code-python-development`), not in this repo — there is no `entrypoint.sh` or `Dockerfile` here to look for; both were removed from this repo (the "Simplify" commit) once the image started shipping the behavior itself. If `.venv` inside a project appears as a symlink rather than a real directory, this is expected behavior.
+
+### Global Git Secret-Scanning Hooks
+
+The `pre-commit`, `commit-msg`, and `prepare-commit-msg` hook scripts (git-secrets, plus
+gitleaks in `pre-commit`) are baked into the base image at `/usr/local/share/git-hooks/`, with
+`git config --system core.hooksPath` pointed directly at that directory and git-secrets' AWS
+patterns registered in an included side file (`/etc/git-secrets-aws.gitconfig`). None of this
+is defined in this repo: `compose.yml` pulls a pre-built `image:` tag rather than `build:`-ing
+one, so there is no local `Dockerfile` or `distribution/` here to look for — that build
+definition (and the `distribution/git-hooks/` source files it presumably copies in) lives in
+the separate repository that produces the `futureys/claude-code-python-development` image.
+Both hooks are deliberately kept out of `/root/.gitconfig`: VS Code Dev Containers only copies
+the host's `~/.gitconfig` into the container when the container doesn't already have one, so
+writing there would pre-empt that copy and silently drop the host's `user.name`/`user.email`.
+git-secrets reads patterns via merged config with no scope flag, so the system-scoped patterns
+still apply to every repo inside the container. Because `core.hooksPath` bypasses each repo's
+own `.git/hooks/`, every global hook chains to a same-named repo-local hook via
+`_local-hook-exec`; if a child project needs another hook type (e.g. `pre-push`), that stub
+needs adding on the base-image side, not in this repo.
 
 ### Per-Project VS Code Workspaces
 
