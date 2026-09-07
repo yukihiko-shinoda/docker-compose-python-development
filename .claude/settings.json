@@ -7,14 +7,11 @@
       "Bash(uv run invoke path*)",
       "Bash(uv run invoke style*)",
       "Bash(uv run invoke test*)",
-      "Bash(uv run pytest*)",
-      "Bash(git rm:*)",
-      "Bash(git switch -c:*)",
-      "Bash(git fetch:*)",
-      "Bash(git add:*)"
-    ],
-    "deny": [
-      "Bash(rm:*)"
+      "Bash(uv run pytest*)"
     ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "enableWeakerNestedSandbox": true
   }
 }

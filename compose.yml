@@ -1,6 +1,24 @@
 services:
   python-development:
-    image: futureys/claude-code-python-development:20260805201500
+    # Claude Code's built-in Bash sandbox uses bubblewrap, which fails inside an
+    # unprivileged container with "No permissions to create a new namespace" even
+    # when the host kernel allows unprivileged user namespaces. CAP_SYS_ADMIN and
+    # a permissive seccomp policy are the combination most commonly reported to
+    # help bubblewrap create the namespaces it needs, though this is not always
+    # sufficient -- see containers/bubblewrap#505 for cases where even a long list
+    # of added capabilities still failed short of --privileged:
+    # https://github.com/containers/bubblewrap/issues/505
+    cap_add:
+      - SYS_ADMIN
+    image: futureys/claude-code-python-development:20260906204000
+    secrets:
+      - slack_webhook_url
+    # Removes Docker's default seccomp filter, which otherwise blocks the unshare/mount/
+    # pivot_root syscalls bubblewrap needs to build its sandbox even with CAP_SYS_ADMIN
+    # granted above -- without it, every Bash tool call fails the same way it does without
+    # cap_add (see the comment above cap_add).
+    security_opt:
+      - seccomp:unconfined
     volumes:
       - .:/workspace:cached
       - venvs:/workspace/venvs
@@ -14,3 +32,6 @@ volumes:
   uv-cache:
   venvs:
   uv-python:
+secrets:
+  slack_webhook_url:
+    environment: SLACK_WEBHOOK_URL
