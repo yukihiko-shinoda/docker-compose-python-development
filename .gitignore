@@ -227,3 +227,4 @@ venvs/*
 # Generated per-project VS Code workspace files (generate with open-project.sh)
 *.code-workspace
 !workspace-template.code-workspace
+.env.op
