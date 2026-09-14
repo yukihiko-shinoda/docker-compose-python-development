@@ -12,7 +12,13 @@ services:
       - SYS_ADMIN
     image: futureys/claude-code-python-development:20260906204000
     secrets:
-      - slack_webhook_url
+      # Mounted at /opt/claude-agent-secrets/, not the default /run/secrets/,
+      # so git-agent-credential-helper.sh (see Dockerfile) can read it from
+      # inside Claude Code's own Bash sandbox, which keeps /run/secrets
+      # denied but allow-lists /opt/claude-agent-secrets/*.
+      - source: git_auth_secret
+        target: /opt/claude-agent-secrets/git_auth_token
+      - source: slack_webhook_url
     # Removes Docker's default seccomp filter, which otherwise blocks the unshare/mount/
     # pivot_root syscalls bubblewrap needs to build its sandbox even with CAP_SYS_ADMIN
     # granted above -- without it, every Bash tool call fails the same way it does without
@@ -33,5 +39,7 @@ volumes:
   venvs:
   uv-python:
 secrets:
+  git_auth_secret:
+    environment: GIT_AUTH_TOKEN
   slack_webhook_url:
     environment: SLACK_WEBHOOK_URL
