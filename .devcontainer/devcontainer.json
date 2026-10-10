@@ -72,7 +72,7 @@
 			],
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"extensions.autoUpdate": false,
+				"dev.containers.gitCredentialHelperConfigLocation": "none",
 				"files.autoGuessEncoding": true,
 				// This setting forcibly generate __pycache__.
 				// "python.testing.pytestEnabled": true,
