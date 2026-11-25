@@ -1,6 +1,6 @@
 services:
   python-development:
-    image: futureys/claude-code-python-development:20261002121500
+    image: futureys/claude-code-python-development:20261122183500
     secrets:
       # Mounted at /opt/claude-agent-secrets/, not the default /run/secrets/,
       # so git-agent-credential-helper.sh (see Dockerfile) can read it from
