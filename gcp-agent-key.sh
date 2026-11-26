@@ -30,23 +30,23 @@ if [ -s "$KEY_FILE" ]; then
   exit 0
 fi
 # Project ID (and, optionally, a non-default service account name) come from
-# .env.op rather than being hardcoded here -- .env.op is gitignored and
-# Read-denied for Claude Code, unlike this script itself. Read directly from
-# .env.op rather than the temporary .env that devcontainer.json's
-# 1password-inject step generates from it: that .env only exists for the
-# short window around `docker compose up`, and this script runs as a
-# parallel initializeCommand entry, not necessarily after that step.
-# Sourced relative to this script's own location (not cwd) since this runs
+# .devcontainer/.env.op rather than being hardcoded here -- .env.op is
+# gitignored and Read-denied for Claude Code, unlike this script itself.
+# Its 1Password secret references are resolved by `op inject` into a private
+# temporary file rather than into the .devcontainer/.env that
+# devcontainer.json's 1password-inject step generates: this script runs as a
+# parallel initializeCommand entry, so sharing that path would race with it,
+# and a manual run would leave plain-text secrets behind there. The trap
+# removes the temporary file on every exit, including failures under set -e.
+# Resolved relative to this script's own location (not cwd) since this runs
 # both as a manual host command and as devcontainer.json's initializeCommand.
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-op inject --force --in-file "$SCRIPT_DIR/.devcontainer/.env.op" --out-file "$SCRIPT_DIR/.devcontainer/.env"
-if [ -f "$SCRIPT_DIR/.devcontainer/.env" ]; then
-  set -a
-  # shellcheck disable=SC1091
-  . "$SCRIPT_DIR/.devcontainer/.env"
-  set +a
-fi
-: "${GCP_PROJECT_ID:?Set GCP_PROJECT_ID in .devcontainer/.env}"
+ENV_FILE="$(mktemp)"
+trap 'rm -f "$ENV_FILE"' EXIT
+op inject --force --in-file "$SCRIPT_DIR/.devcontainer/.env.op" --out-file "$ENV_FILE"
+# shellcheck disable=SC1090
+. "$ENV_FILE"
+: "${GCP_PROJECT_ID:?Set GCP_PROJECT_ID in .devcontainer/.env.op}"
 GCP_SERVICE_ACCOUNT_NAME="${GCP_SERVICE_ACCOUNT_NAME:-claude-code}"
 mkdir -p "$SECRETS_DIR"
 chmod 700 "$SECRETS_DIR"
