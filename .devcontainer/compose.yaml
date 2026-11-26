@@ -1,5 +1,18 @@
+
+
 services:
+  # Update this to the name of the service you want to work with in your docker-compose.yml file
   python-development:
+    # Uncomment if you want to override the service's Dockerfile to one in the .devcontainer 
+    # folder. Note that the path of the Dockerfile and context is relative to the *primary* 
+    # docker-compose.yml file (the first in the devcontainer.json "dockerComposeFile"
+    # array). The sample below assumes your primary file is in the root of your project.
+    #
+    # build:
+    #   context: .
+    #   dockerfile: .devcontainer/Dockerfile
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
     image: futureys/claude-code-python-development:20261122183500
     secrets:
       # Mounted at /opt/claude-agent-secrets/, not the default /run/secrets/,
@@ -19,6 +32,9 @@ services:
       # this file too without any sandbox config change.
       - source: gcp_claude_code_key
         target: /opt/claude-agent-secrets/claude-code-key.json
+    # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
+    # cap_add:
+    #   - SYS_PTRACE
     # Claude Code's built-in Bash sandbox uses bubblewrap, which needs the unshare/mount/
     # pivot_root syscalls to build its sandbox -- Docker's default seccomp filter blocks
     # those, so it's removed here. CAP_SYS_ADMIN was also added alongside this at first
@@ -31,7 +47,8 @@ services:
     tmpfs:
       - /root/.config/gh
     volumes:
-      - .:/workspace:cached
+      # Update this to wherever you want VS Code to mount the folder of your project
+      - ..:/workspace:cached
       - venvs:/workspace/venvs
       - ~/.claude:/root/.claude
       - ~/.claude.json:/root/.claude.json

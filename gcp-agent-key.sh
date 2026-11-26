@@ -39,13 +39,14 @@ fi
 # Sourced relative to this script's own location (not cwd) since this runs
 # both as a manual host command and as devcontainer.json's initializeCommand.
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-if [ -f "$SCRIPT_DIR/.env.op" ]; then
+op inject --force --in-file "$SCRIPT_DIR/.devcontainer/.env.op" --out-file "$SCRIPT_DIR/.devcontainer/.env"
+if [ -f "$SCRIPT_DIR/.devcontainer/.env" ]; then
   set -a
   # shellcheck disable=SC1091
-  . "$SCRIPT_DIR/.env.op"
+  . "$SCRIPT_DIR/.devcontainer/.env"
   set +a
 fi
-: "${GCP_PROJECT_ID:?Set GCP_PROJECT_ID in .env}"
+: "${GCP_PROJECT_ID:?Set GCP_PROJECT_ID in .devcontainer/.env}"
 GCP_SERVICE_ACCOUNT_NAME="${GCP_SERVICE_ACCOUNT_NAME:-claude-code}"
 mkdir -p "$SECRETS_DIR"
 chmod 700 "$SECRETS_DIR"
