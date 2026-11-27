@@ -43,7 +43,7 @@ fi
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 ENV_FILE="$(mktemp)"
 trap 'rm -f "$ENV_FILE"' EXIT
-op inject --force --in-file "$SCRIPT_DIR/.devcontainer/.env.op" --out-file "$ENV_FILE"
+op inject --force --in-file "$SCRIPT_DIR/.env.op" --out-file "$ENV_FILE"
 # shellcheck disable=SC1090
 . "$ENV_FILE"
 : "${GCP_PROJECT_ID:?Set GCP_PROJECT_ID in .devcontainer/.env.op}"

@@ -47,8 +47,8 @@ Key benefits:
    | `SLACK_BOT_TOKEN` | Secret reference | Slack notifications from Claude Code hooks |
    | `HOOKBELL_SLACK_CHANNEL_ID` | Secret reference or plain value | Slack channel for notifications |
    | `HOOKBELL_SLACK_ALLOWED_USER_ID` | Secret reference or plain value | Slack user allowed to respond |
-   | `GCP_PROJECT_ID` | Secret reference or plain value | `gcp-agent-key.sh` |
-   | `GCP_SERVICE_ACCOUNT_NAME` | Secret reference or plain value (optional, default `claude-code`) | `gcp-agent-key.sh` |
+   | `GCP_PROJECT_ID` | Secret reference or plain value | `.devcontainer/gcp-agent-key.sh` |
+   | `GCP_SERVICE_ACCOUNT_NAME` | Secret reference or plain value (optional, default `claude-code`) | `.devcontainer/gcp-agent-key.sh` |
 
    `.env.op` is gitignored. Each time the Dev Container starts, `op inject` resolves the references into a temporary `.devcontainer/.env`, which Docker Compose passes to the container as Docker secrets; that `.env` is deleted once VS Code attaches.
 
