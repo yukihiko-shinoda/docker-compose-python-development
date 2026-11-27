@@ -15,21 +15,22 @@ services:
     command: sleep infinity
     image: futureys/claude-code-python-development:20261122183500
     secrets:
-      # Mounted at /opt/claude-agent-secrets/, not the default /run/secrets/,
-      # so git-agent-credential-helper.sh (see Dockerfile) can read it from
-      # inside Claude Code's own Bash sandbox, which keeps /run/secrets
-      # denied but allow-lists /opt/claude-agent-secrets/*.
+      # Mounted at the default /run/secrets/<source>, which Claude Code's own
+      # Bash sandbox denies reading: only processes outside the sandbox (e.g.
+      # the base image's git-agent-credential-helper and hookbell) use them.
       - source: GIT_AUTH_TOKEN
       - source: slack_webhook_url
       - source: slack_bot_token
       - source: hookbell_slack_channel_id
       - source: hookbell_slack_allowed_user_id
       # Static claude-code service account key, minted on the host by
-      # gcp-agent-key.sh into ~/.gcp-agent-secrets/ -- placed in the same
-      # container directory as the AWS secrets above so Claude Code's own
-      # Bash sandbox, which already denies reading /opt/claude-agent-secrets
-      # except for the three AWS files explicitly allow-listed there, denies
-      # this file too without any sandbox config change.
+      # gcp-agent-key.sh into ~/.gcp-agent-secrets/. Mounted at the path the
+      # base image's gws wrapper (/usr/local/bin/gws) reads it from, instead
+      # of under /run/secrets/. Since that wrapper runs inside Claude Code's
+      # Bash sandbox, this key is readable from there too, so its blast radius
+      # depends on what the service account is granted: users should share only
+      # the specific Google Drive folders Claude Code needs with it, and grant
+      # it no project-level IAM roles.
       - source: gcp_claude_code_key
         target: /opt/claude-agent-secrets/claude-code-key.json
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
