@@ -1,5 +1,9 @@
 # docker-compose-python-development
 
+> [!IMPORTANT]
+> This repository has moved to [yukihiko-shinoda/devcontainer-python](https://github.com/yukihiko-shinoda/devcontainer-python).
+> No further updates will be made here. Please use the new repository instead.
+
 A Docker Compose development environment for multiple Python projects, with persistent virtual environments and pre-configured VS Code tooling.
 
 ## Advantage
